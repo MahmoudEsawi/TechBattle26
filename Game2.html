@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Family Feud Round 2</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div class="Game-container">
+        <a href="./index.html"><img src="./assets/images/CS LOGO-04.png" title="CSLOGO" class="CS-logo"></a>
+        <div class="question">
+            <p>The most commonly used social media platforms</p>
+        </div>
+        <input type = "hidden" value="2" id = "round"/>
+        <div class="inner-div">
+            <button id="myButton1" class="hide-answer">
+                <div id="front1" class="front">1</div>
+                <div id="back1" class="back"></div>
+            </button>
+            <button id="myButton2" class="hide-answer">
+                <div id="front2" class="front">2</div>
+                <div id="back2" class="back"></div>
+            </button>
+            <button id="myButton3" class="hide-answer">
+                <div id="front3" class="front">3</div>
+                <div id="back3" class="back"></div>
+            </button>
+            <button id="myButton4" class="hide-answer">
+                <div id="front4" class="front">4</div>
+                <div id="back4" class="back"></div>
+            </button>
+            <button id="myButton5" class="hide-answer">
+                <div id="front5" class="front">5</div>
+                <div id="back5" class="back"></div>
+            </button>
+            <button id="myButton6" class="hide-answer">
+                <div id="front6" class="front">6</div>
+                <div id="back6" class="back"></div>
+            </button>
+        </div>
+    </div>
+    <div id="wrong-answer-image-container" style="display: none;">
+    <img src="./assets/images/X_mark.png" alt="Wrong Answer" id="wrong-answer-image">
+</div>
+    <script src="./script.js"></script>
+
+</body>
+</html>
