@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournament Bracket - Tech Battle</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <a href="../index.html"><img src="../assets/images/CS LOGO-04.png" title="CSLOGO" class="CS-logo"></a>
+    
+    <div class="tournament-container">
+        <h1 class="tournament-title">TOURNAMENT BRACKET</h1>
+        
+        <div class="bracket-wrapper">
+            <!-- Quarterfinals (8 Teams) -->
+            <div class="bracket-section quarterfinals">
+                <h2 class="round-title">QUARTERFINALS</h2>
+                <div class="matches-container">
+                    <div class="match">
+                        <div class="team-slot" data-match="1" data-position="1" onclick="selectTeam(this)">
+                            <span class="team-placeholder">Team A</span>
+                        </div>
+                        <div class="match-vs">VS</div>
+                        <div class="team-slot" data-match="1" data-position="2" onclick="selectTeam(this)">
+                            <span class="team-placeholder">Team B</span>
+                        </div>
+                    </div>
+                    <div class="match">
+                        <div class="team-slot" data-match="2" data-position="1" onclick="selectTeam(this)">
+                            <span class="team-placeholder">Team C</span>
+                        </div>
+                        <div class="match-vs">VS</div>
+                        <div class="team-slot" data-match="2" data-position="2" onclick="selectTeam(this)">
+                            <span class="team-placeholder">Team D</span>
+                        </div>
+                    </div>
+                    <div class="match">
+                        <div class="team-slot" data-match="3" data-position="1" onclick="selectTeam(this)">
+                            <span class="team-placeholder">Team E</span>
+                        </div>
+                        <div class="match-vs">VS</div>
+                        <div class="team-slot" data-match="3" data-position="2" onclick="selectTeam(this)">
+                            <span class="team-placeholder">Team F</span>
+                        </div>
+                    </div>
+                    <div class="match">
+                        <div class="team-slot" data-match="4" data-position="1" onclick="selectTeam(this)">
+                            <span class="team-placeholder">Team G</span>
+                        </div>
+                        <div class="match-vs">VS</div>
+                        <div class="team-slot" data-match="4" data-position="2" onclick="selectTeam(this)">
+                            <span class="team-placeholder">Team H</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Semifinals (4 Teams) -->
+            <div class="bracket-section semifinals">
+                <h2 class="round-title">SEMIFINALS</h2>
+                <div class="matches-container">
+                    <div class="match">
+                        <div class="team-slot winner-slot" data-match="5" data-position="1" onclick="selectTeam(this)">
+                            <span class="team-placeholder">Winner 1</span>
+                        </div>
+                        <div class="match-vs">VS</div>
+                        <div class="team-slot winner-slot" data-match="5" data-position="2" onclick="selectTeam(this)">
+                            <span class="team-placeholder">Winner 2</span>
+                        </div>
+                    </div>
+                    <div class="match">
+                        <div class="team-slot winner-slot" data-match="6" data-position="1" onclick="selectTeam(this)">
+                            <span class="team-placeholder">Winner 3</span>
+                        </div>
+                        <div class="match-vs">VS</div>
+                        <div class="team-slot winner-slot" data-match="6" data-position="2" onclick="selectTeam(this)">
+                            <span class="team-placeholder">Winner 4</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Final (2 Teams) -->
+            <div class="bracket-section final">
+                <h2 class="round-title">FINAL</h2>
+                <div class="matches-container">
+                    <div class="match final-match">
+                        <div class="team-slot winner-slot champion" data-match="7" data-position="1" onclick="selectTeam(this)">
+                            <span class="team-placeholder">Finalist 1</span>
+                        </div>
+                        <div class="match-vs">VS</div>
+                        <div class="team-slot winner-slot champion" data-match="7" data-position="2" onclick="selectTeam(this)">
+                            <span class="team-placeholder">Finalist 2</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Team Selection Modal -->
+        <div class="team-select-modal" id="teamSelectModal" style="display: none;">
+            <div class="team-select-modal-content">
+                <h3 class="modal-title">Select Team</h3>
+                <div class="modal-teams-grid">
+                    <button class="modal-team-btn" data-team="Team A" onclick="assignTeam(this)">Team A</button>
+                    <button class="modal-team-btn" data-team="Team B" onclick="assignTeam(this)">Team B</button>
+                    <button class="modal-team-btn" data-team="Team C" onclick="assignTeam(this)">Team C</button>
+                    <button class="modal-team-btn" data-team="Team D" onclick="assignTeam(this)">Team D</button>
+                    <button class="modal-team-btn" data-team="Team E" onclick="assignTeam(this)">Team E</button>
+                    <button class="modal-team-btn" data-team="Team F" onclick="assignTeam(this)">Team F</button>
+                    <button class="modal-team-btn" data-team="Team G" onclick="assignTeam(this)">Team G</button>
+                    <button class="modal-team-btn" data-team="Team H" onclick="assignTeam(this)">Team H</button>
+                </div>
+                <button class="modal-close-btn" onclick="closeTeamModal()">Close</button>
+            </div>
+        </div>
+
+        <div class="tournament-controls">
+            <button class="control-btn" onclick="resetTournament()">Reset Tournament</button>
+            <button class="control-btn" onclick="autoAdvanceWinners()">Auto Advance Winners</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlot = null;
+        const tournamentData = {
+            quarterfinals: { 1: null, 2: null, 3: null, 4: null },
+            semifinals: { 1: null, 2: null },
+            final: { 1: null }
+        };
+
+        function selectTeam(slot) {
+            currentSlot = slot;
+            document.getElementById('teamSelectModal').style.display = 'flex';
+        }
+
+        function assignTeam(btn) {
+            const teamName = btn.dataset.team;
+            if (currentSlot) {
+                currentSlot.querySelector('.team-placeholder').textContent = teamName;
+                currentSlot.classList.add('selected');
+                
+                // Update tournament data
+                const match = parseInt(currentSlot.dataset.match);
+                const position = parseInt(currentSlot.dataset.position);
+                
+                if (match <= 4) {
+                    tournamentData.quarterfinals[match] = tournamentData.quarterfinals[match] || {};
+                    tournamentData.quarterfinals[match][position] = teamName;
+                } else if (match <= 6) {
+                    tournamentData.semifinals[match - 4] = tournamentData.semifinals[match - 4] || {};
+                    tournamentData.semifinals[match - 4][position] = teamName;
+                } else {
+                    tournamentData.final[position] = teamName;
+                }
+                
+                checkMatchCompletion(match);
+            }
+            closeTeamModal();
+        }
+
+        function checkMatchCompletion(match) {
+            let teams = [];
+            
+            if (match <= 4) {
+                const matchData = tournamentData.quarterfinals[match];
+                if (matchData && matchData[1] && matchData[2]) {
+                    teams = [matchData[1], matchData[2]];
+                }
+            } else if (match <= 6) {
+                const matchData = tournamentData.semifinals[match - 4];
+                if (matchData && matchData[1] && matchData[2]) {
+                    teams = [matchData[1], matchData[2]];
+                }
+            } else {
+                if (tournamentData.final[1] && tournamentData.final[2]) {
+                    teams = [tournamentData.final[1], tournamentData.final[2]];
+                }
+            }
+            
+            if (teams.length === 2) {
+                highlightMatchComplete(match);
+            }
+        }
+
+        function highlightMatchComplete(match) {
+            const matchSlots = document.querySelectorAll(`[data-match="${match}"]`);
+            matchSlots.forEach(slot => {
+                slot.classList.add('match-ready');
+            });
+        }
+
+        function closeTeamModal() {
+            document.getElementById('teamSelectModal').style.display = 'none';
+            currentSlot = null;
+        }
+
+        function resetTournament() {
+            if (confirm('Reset entire tournament?')) {
+                location.reload();
+            }
+        }
+
+        function autoAdvanceWinners() {
+            // Auto-advance quarterfinal winners to semifinals
+            // Match 1 → Semifinal 1 Position 1
+            // Match 2 → Semifinal 1 Position 2
+            // Match 3 → Semifinal 2 Position 1
+            // Match 4 → Semifinal 2 Position 2
+            
+            if (tournamentData.quarterfinals[1] && tournamentData.quarterfinals[1][1] && tournamentData.quarterfinals[1][2]) {
+                const winner = tournamentData.quarterfinals[1][1]; // First team wins
+                const slot = document.querySelector('[data-match="5"][data-position="1"]');
+                if (slot) {
+                    slot.querySelector('.team-placeholder').textContent = winner;
+                    slot.classList.add('selected');
+                    tournamentData.semifinals[1] = tournamentData.semifinals[1] || {};
+                    tournamentData.semifinals[1][1] = winner;
+                }
+            }
+            
+            if (tournamentData.quarterfinals[2] && tournamentData.quarterfinals[2][1] && tournamentData.quarterfinals[2][2]) {
+                const winner = tournamentData.quarterfinals[2][1];
+                const slot = document.querySelector('[data-match="5"][data-position="2"]');
+                if (slot) {
+                    slot.querySelector('.team-placeholder').textContent = winner;
+                    slot.classList.add('selected');
+                    tournamentData.semifinals[1] = tournamentData.semifinals[1] || {};
+                    tournamentData.semifinals[1][2] = winner;
+                }
+            }
+            
+            if (tournamentData.quarterfinals[3] && tournamentData.quarterfinals[3][1] && tournamentData.quarterfinals[3][2]) {
+                const winner = tournamentData.quarterfinals[3][1];
+                const slot = document.querySelector('[data-match="6"][data-position="1"]');
+                if (slot) {
+                    slot.querySelector('.team-placeholder').textContent = winner;
+                    slot.classList.add('selected');
+                    tournamentData.semifinals[2] = tournamentData.semifinals[2] || {};
+                    tournamentData.semifinals[2][1] = winner;
+                }
+            }
+            
+            if (tournamentData.quarterfinals[4] && tournamentData.quarterfinals[4][1] && tournamentData.quarterfinals[4][2]) {
+                const winner = tournamentData.quarterfinals[4][1];
+                const slot = document.querySelector('[data-match="6"][data-position="2"]');
+                if (slot) {
+                    slot.querySelector('.team-placeholder').textContent = winner;
+                    slot.classList.add('selected');
+                    tournamentData.semifinals[2] = tournamentData.semifinals[2] || {};
+                    tournamentData.semifinals[2][2] = winner;
+                }
+            }
+            
+            // Auto-advance semifinal winners to final
+            if (tournamentData.semifinals[1] && tournamentData.semifinals[1][1] && tournamentData.semifinals[1][2]) {
+                const winner = tournamentData.semifinals[1][1];
+                const slot = document.querySelector('[data-match="7"][data-position="1"]');
+                if (slot) {
+                    slot.querySelector('.team-placeholder').textContent = winner;
+                    slot.classList.add('selected');
+                    tournamentData.final[1] = winner;
+                }
+            }
+            
+            if (tournamentData.semifinals[2] && tournamentData.semifinals[2][1] && tournamentData.semifinals[2][2]) {
+                const winner = tournamentData.semifinals[2][1];
+                const slot = document.querySelector('[data-match="7"][data-position="2"]');
+                if (slot) {
+                    slot.querySelector('.team-placeholder').textContent = winner;
+                    slot.classList.add('selected');
+                    tournamentData.final[2] = winner;
+                }
+            }
+            
+            checkMatchCompletion(5);
+            checkMatchCompletion(6);
+            checkMatchCompletion(7);
+        }
+
+        // Close modal on outside click
+        document.getElementById('teamSelectModal').addEventListener('click', (e) => {
+            if (e.target.id === 'teamSelectModal') {
+                closeTeamModal();
+            }
+        });
+    </script>
+</body>
+</html>
+

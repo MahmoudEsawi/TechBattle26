@@ -1,0 +1,105 @@
+<!-- Navigation Bar -->
+<nav class="main-navbar">
+    <div class="navbar-container">
+        <a href="#" class="navbar-logo" id="navbar-logo-link">
+            <img src="#" alt="CS Logo" class="navbar-logo-img" id="navbar-logo-img">
+        </a>
+        <div class="navbar-links">
+            <a href="#" class="navbar-link" data-page="index">
+                <span class="navbar-link-text">Home</span>
+            </a>
+            <a href="#" class="navbar-link" data-page="familyFeud">
+                <span class="navbar-link-text">Family Feud</span>
+            </a>
+            <a href="#" class="navbar-link" data-page="timer">
+                <span class="navbar-link-text">Timer</span>
+            </a>
+            <a href="#" class="navbar-link" data-page="buzzer">
+                <span class="navbar-link-text">Buzzer</span>
+            </a>
+            <a href="#" class="navbar-link" data-page="var">
+                <span class="navbar-link-text">VAR</span>
+            </a>
+            <a href="#" class="navbar-link" data-page="tournament">
+                <span class="navbar-link-text">Tournament</span>
+            </a>
+        </div>
+        <button class="navbar-toggle" id="navbarToggle" onclick="toggleNavbar()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+</nav>
+
+<script>
+function toggleNavbar() {
+    const navbar = document.querySelector('.main-navbar');
+    navbar.classList.toggle('navbar-open');
+}
+
+// Set navbar paths based on current page location
+function setupNavbarPaths() {
+    const currentPath = window.location.pathname;
+    let basePath = '';
+    
+    // Determine base path based on current location
+    if (currentPath.includes('/pages/games/') || currentPath.includes('/pages/buzzer/')) {
+        // Two levels deep
+        basePath = '../../';
+    } else if (currentPath.includes('/pages/')) {
+        // One level deep
+        basePath = '../';
+    } else {
+        // Root level
+        basePath = './';
+    }
+    
+    // Update logo link and image
+    const logoLink = document.getElementById('navbar-logo-link');
+    const logoImg = document.getElementById('navbar-logo-img');
+    if (logoLink) logoLink.href = basePath + 'index.html';
+    if (logoImg) logoImg.src = basePath + 'assets/images/CS LOGO-04.png';
+    
+    // Update navbar links
+    const links = document.querySelectorAll('.navbar-link');
+    const pageMap = {
+        'index': basePath + 'index.html',
+        'familyFeud': basePath + (basePath === './' ? 'pages/' : '') + 'familyFeud.html',
+        'timer': basePath + (basePath === './' ? 'pages/' : '') + 'timer.html',
+        'buzzer': basePath + (basePath === './' ? 'pages/' : '') + 'buzzer/BuzzerIndex.html',
+        'var': basePath + (basePath === './' ? 'pages/' : '') + 'var.html',
+        'tournament': basePath + (basePath === './' ? 'pages/' : '') + 'tournament.html'
+    };
+    
+    links.forEach(link => {
+        const page = link.getAttribute('data-page');
+        if (page && pageMap[page]) {
+            link.href = pageMap[page];
+        }
+    });
+}
+
+// Highlight current page in navbar and add navbar class to body
+document.addEventListener('DOMContentLoaded', function() {
+    // Add has-navbar class to body
+    document.body.classList.add('has-navbar');
+    
+    // Setup paths
+    setupNavbarPaths();
+    
+    // Highlight current page
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    const links = document.querySelectorAll('.navbar-link');
+    
+    links.forEach(link => {
+        const href = link.getAttribute('href');
+        const pageName = href.split('/').pop();
+        if (pageName === currentPage || 
+            (currentPage === '' && href.includes('index.html')) ||
+            (currentPage === 'index.html' && href.includes('index.html'))) {
+            link.classList.add('navbar-link-active');
+        }
+    });
+});
+</script>

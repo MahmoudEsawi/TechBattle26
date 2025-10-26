@@ -1,0 +1,135 @@
+<!-- Scoreboard -->
+<div class="scoreboard">
+    <div class="scoreboard-header">Scoreboard</div>
+    <div id="scoreboard-display"></div>
+    <button class="control-btn" onclick="window.scoreboard.resetScores()" style="margin-top: 10px; width: 100%;">Reset Scores</button>
+</div>
+
+<!-- Control Panel -->
+<div class="control-panel">
+    <button class="control-btn" id="sound-toggle" onclick="window.soundManager.toggle()">Sound ON</button>
+    <button class="control-btn" onclick="toggleFullscreen()">Fullscreen</button>
+    <button class="control-btn" onclick="showShortcuts()">Help (?)</button>
+</div>
+
+<!-- Keyboard Shortcuts Overlay -->
+<div class="shortcuts-overlay" id="shortcutsOverlay">
+    <div class="shortcuts-box">
+        <div class="shortcuts-close" onclick="hideShortcuts()">×</div>
+        <h2 class="shortcuts-title">Keyboard Shortcuts</h2>
+        
+        <div class="shortcut-section">
+            <div class="shortcut-section-title">Family Feud Controls</div>
+            <div class="shortcut-item">
+                <span class="shortcut-key">1-6</span>
+                <span class="shortcut-desc">Reveal Answer</span>
+            </div>
+            <div class="shortcut-item">
+                <span class="shortcut-key">X</span>
+                <span class="shortcut-desc">Wrong Answer</span>
+            </div>
+            <div class="shortcut-item">
+                <span class="shortcut-key">C</span>
+                <span class="shortcut-desc">Play Correct Sound</span>
+            </div>
+        </div>
+        
+        <div class="shortcut-section">
+            <div class="shortcut-section-title">Timer Controls</div>
+            <div class="shortcut-item">
+                <span class="shortcut-key">S</span>
+                <span class="shortcut-desc">Start Timer</span>
+            </div>
+            <div class="shortcut-item">
+                <span class="shortcut-key">R</span>
+                <span class="shortcut-desc">Reset Timer</span>
+            </div>
+            <div class="shortcut-item">
+                <span class="shortcut-key">N</span>
+                <span class="shortcut-desc">Next Question</span>
+            </div>
+            <div class="shortcut-item">
+                <span class="shortcut-key">P</span>
+                <span class="shortcut-desc">Previous Question</span>
+            </div>
+        </div>
+        
+        <div class="shortcut-section">
+            <div class="shortcut-section-title">General Controls</div>
+            <div class="shortcut-item">
+                <span class="shortcut-key">?</span>
+                <span class="shortcut-desc">Show/Hide Shortcuts</span>
+            </div>
+            <div class="shortcut-item">
+                <span class="shortcut-key">ESC</span>
+                <span class="shortcut-desc">Close Overlay / Exit Fullscreen</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Team Names Display (for game pages) -->
+<div class="team-names" id="teamNamesDisplay">
+    <div class="team-card">
+        <div class="team-card-name">Team A</div>
+        <div class="team-card-score">Score: <span id="teamAScore">0</span></div>
+    </div>
+    <div class="team-card">
+        <div class="team-card-name">Team B</div>
+        <div class="team-card-score">Score: <span id="teamBScore">0</span></div>
+    </div>
+</div>
+
+<script>
+// Fullscreen Toggle
+function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+            console.log('Error entering fullscreen:', err);
+        });
+    } else {
+        document.exitFullscreen();
+    }
+}
+
+// Shortcuts Overlay
+function showShortcuts() {
+    document.getElementById('shortcutsOverlay').classList.add('active');
+}
+
+function hideShortcuts() {
+    document.getElementById('shortcutsOverlay').classList.remove('active');
+}
+
+// Keyboard shortcut for '?' key
+document.addEventListener('keydown', (e) => {
+    if (e.key === '?' || e.key === '/') {
+        const overlay = document.getElementById('shortcutsOverlay');
+        if (overlay) {
+            overlay.classList.toggle('active');
+        }
+    }
+    if (e.key === 'Escape') {
+        hideShortcuts();
+        if (document.fullscreenElement) {
+            document.exitFullscreen();
+        }
+    }
+});
+
+// Update team scores display
+function updateTeamScores() {
+    if (window.scoreboard) {
+        const scores = window.scoreboard.teams;
+        const teamAScore = document.getElementById('teamAScore');
+        const teamBScore = document.getElementById('teamBScore');
+        
+        if (teamAScore) teamAScore.textContent = scores['Team A'] || 0;
+        if (teamBScore) teamBScore.textContent = scores['Team B'] || 0;
+    }
+}
+
+// Update scores every second
+setInterval(updateTeamScores, 1000);
+</script>
+

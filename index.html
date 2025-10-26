@@ -2,23 +2,129 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Computer Society Tech Battle</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" 
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="stylesheet" href="./style.css">
-    <link rel="script" href="./script.js">
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
-    <img src="./assets/images/CS LOGO-04.png" alt="" class="CS-logo">
+    <canvas id="threejs-canvas"></canvas>
+    <div class="particles-container" id="particles"></div>
+    <img src="./assets/images/CS LOGO-04.png" alt="IEEE CS TTU Logo" class="CS-logo">
     <div class="container">
         <div class="CS-img">
-            <img src="./assets/images/cs tech battle-01.png" alt="CS_LOGO">
+            <img src="./assets/images/cs tech battle-01.png" alt="CS Tech Battle Logo">
         </div>
         <div class="Buttons">
-            <a href="./familyFeud.html"><button class="btn btn-outline-warning">Family Feud</button></a>
-            <a href="./timer.html"><button class="btn btn-outline-warning">Timer</button></a>
-            <a href="BuzzerIndex.html"><button class="btn btn-outline-warning">Buzzer</button></a>
+            <a href="./pages/familyFeud.html" class="nav-link-btn">
+                <button class="btn btn-outline-warning">
+                    <span class="btn-text">Family Feud</span>
+                </button>
+            </a>
+            <a href="./pages/timer.html" class="nav-link-btn">
+                <button class="btn btn-outline-warning">
+                    <span class="btn-text">Timer</span>
+                </button>
+            </a>
+            <a href="./pages/buzzer/BuzzerIndex.html" class="nav-link-btn">
+                <button class="btn btn-outline-warning">
+                    <span class="btn-text">Buzzer</span>
+                </button>
+            </a>
+            <a href="./pages/var.html" class="nav-link-btn">
+                <button class="btn btn-outline-warning">
+                    <span class="btn-text">VAR</span>
+                </button>
+            </a>
+            <a href="./pages/tournament.html" class="nav-link-btn">
+                <button class="btn btn-outline-warning">
+                    <span class="btn-text">Tournament</span>
+                </button>
+            </a>
         </div>
     </div>
+    <script src="./js/app.js"></script>
+    <script>
+        // Three.js 3D Background
+        function initThreeJS() {
+            const canvas = document.getElementById('threejs-canvas');
+            if (!canvas) return;
+            
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x000000, 0);
+            
+            // Create floating 3D particles
+            const particles = [];
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const geometry = new THREE.SphereGeometry(0.05, 8, 8);
+                const material = new THREE.MeshBasicMaterial({ 
+                    color: 0xffa300,
+                    transparent: true,
+                    opacity: 0.6
+                });
+                const particle = new THREE.Mesh(geometry, material);
+                
+                particle.position.x = (Math.random() - 0.5) * 20;
+                particle.position.y = (Math.random() - 0.5) * 20;
+                particle.position.z = (Math.random() - 0.5) * 20;
+                
+                scene.add(particle);
+                particles.push(particle);
+            }
+            
+            camera.position.z = 5;
+            
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                particles.forEach((particle, i) => {
+                    particle.rotation.x += 0.01;
+                    particle.rotation.y += 0.01;
+                    particle.position.y += Math.sin(Date.now() * 0.001 + i) * 0.002;
+                });
+                
+                renderer.render(scene, camera);
+            }
+            
+            animate();
+            
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+        
+        // Create animated particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            if (!container) return;
+            
+            const particleCount = 30;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 10 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            if (typeof THREE !== 'undefined') {
+                initThreeJS();
+            }
+        });
+    </script>
 </body>
 </html>

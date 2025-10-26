@@ -2,16 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Family Feud Round 1</title>
-    <link rel="stylesheet" href="./style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Feud Round 4</title>
+    <link rel="stylesheet" href="../../css/style.css">
 </head>
 <body>
+    <div id="gameControls"></div>
     <div class="Game-container">
-        <a href="./index.html"><img src="./assets/images/CS LOGO-04.png" title="CSLOGO" class="CS-logo"></a>
+        <a href="../../index.html"><img src="../../assets/images/CS LOGO-04.png" title="CSLOGO" class="CS-logo"></a>
         <div class="question">
-            <p>The most popular programming languages</p>
+            <p>Most popular sorting algorithms</p>
         </div>
-        <input type = "hidden" value="1" id = "round"/>
+        <input type = "hidden" value="4" id = "round"/>
         <div class="inner-div">
             <button id="myButton1" class="hide-answer">
                 <div id="front1" class="front">1</div>
@@ -39,10 +41,15 @@
             </button>
         </div>
     </div>
-    <div id="wrong-answer-image-container" style="display: none;">
-    <img src="./assets/images/X_mark.png" alt="Wrong Answer" id="wrong-answer-image">
-</div>
-    <script src="./script.js"></script>
-
+    <div id="wrong-answer-image-container" style="display: none;"></div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="../../js/app.js"></script>
+    <script>
+            .then(html => {
+                document.getElementById('gameControls').innerHTML = html;
+                if (window.scoreboard) window.scoreboard.updateDisplay();
+                if (window.soundManager) window.soundManager.updateUI();
+            });
+    </script>
 </body>
 </html>

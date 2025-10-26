@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VAR - Video Assistant Review</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <style>
+        .var-container {
+            min-height: 100vh;
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3rem;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .var-title {
+            font-size: 5rem;
+            font-weight: 900;
+            color: #FFD700;
+            text-shadow: 
+                0 0 30px rgba(255, 163, 0, 1),
+                0 0 60px rgba(255, 163, 0, 0.8);
+            text-transform: uppercase;
+            letter-spacing: 6px;
+            margin-bottom: 2rem;
+        }
+        
+        .video-upload-zone {
+            width: 900px;
+            max-width: 95%;
+            height: 450px;
+            border: 5px dashed #FF6B35;
+            border-radius: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.15), rgba(255, 163, 0, 0.1));
+            backdrop-filter: blur(20px);
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                0 0 30px rgba(255, 163, 0, 0.3);
+        }
+        
+        .video-upload-zone:hover {
+            border-color: #FFD700;
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.25), rgba(255, 163, 0, 0.15));
+            transform: scale(1.02);
+            box-shadow: 
+                0 12px 48px rgba(0, 0, 0, 0.5),
+                0 0 50px rgba(255, 163, 0, 0.6);
+        }
+        
+        .video-upload-zone.dragover {
+            border-color: #FFD700;
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.35), rgba(255, 163, 0, 0.2));
+            border-style: solid;
+        }
+        
+        .upload-icon {
+            font-size: 6rem;
+            color: #FF6B35;
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(0 0 25px rgba(255, 163, 0, 0.9));
+        }
+        
+        .upload-text {
+            font-size: 2rem;
+            color: white;
+            font-weight: 800;
+            text-shadow: 
+                0 0 15px rgba(255, 163, 0, 0.9),
+                0 2px 10px rgba(0, 0, 0, 0.8);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        .upload-subtext {
+            font-size: 1.2rem;
+            color: #FFA366;
+            margin-top: 0.8rem;
+            font-weight: 600;
+        }
+        
+        #videoInput {
+            display: none;
+        }
+        
+        .video-preview {
+            width: 100%;
+            max-width: 1400px;
+            display: none;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .video-preview video {
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 
+                0 0 60px rgba(255, 163, 0, 0.7),
+                0 8px 32px rgba(0, 0, 0, 0.6);
+            background: #000;
+            border: 4px solid rgba(255, 163, 0, 0.5);
+        }
+        
+        .video-controls {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .var-control-btn {
+            padding: 1.2rem 2.5rem;
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.3), rgba(255, 163, 0, 0.2));
+            border: 4px solid #FF6B35;
+            border-radius: 18px;
+            color: white;
+            font-weight: 800;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 
+                0 4px 20px rgba(0, 0, 0, 0.4),
+                0 0 15px rgba(255, 163, 0, 0.4);
+        }
+        
+        .var-control-btn:hover {
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.5), rgba(255, 163, 0, 0.3));
+            border-color: #FFD700;
+            transform: translateY(-4px);
+            box-shadow: 
+                0 8px 35px rgba(0, 0, 0, 0.5),
+                0 0 40px rgba(255, 163, 0, 0.7);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 40px;
+            background: rgba(255, 107, 53, 0.2);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-top: 1.5rem;
+            display: none;
+            border: 3px solid rgba(255, 163, 0, 0.3);
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FF6B35, #FFD700);
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 
+                0 0 30px rgba(255, 163, 0, 0.9),
+                inset 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="threejs-canvas"></canvas>
+    <a href="../index.html"><img src="../assets/images/CS LOGO-04.png" title="CSLOGO" class="CS-logo"></a>
+    
+    <div class="var-container">
+        <h1 class="var-title">VAR</h1>
+        
+        <div class="video-upload-zone" id="uploadZone">
+            <div class="upload-icon">▶</div>
+            <div class="upload-text">Drop Video Here</div>
+            <div class="upload-subtext">or click to browse</div>
+            <input type="file" id="videoInput" accept="video/*">
+            <div class="progress-bar" id="progressBar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+        
+        <div class="video-preview" id="videoPreview">
+            <video id="videoPlayer" controls></video>
+            <div class="video-controls">
+                <button class="var-control-btn" onclick="playVideo()">Play</button>
+                <button class="var-control-btn" onclick="pauseVideo()">Pause</button>
+                <button class="var-control-btn" onclick="resetVideo()">Reset</button>
+                <button class="var-control-btn" onclick="clearVideo()">Clear</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Three.js Background
+        function initThreeJS() {
+            const canvas = document.getElementById('threejs-canvas');
+            if (!canvas || typeof THREE === 'undefined') return;
+            
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x000000, 0);
+            
+            const particles = [];
+            for (let i = 0; i < 30; i++) {
+                const geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+                const material = new THREE.MeshBasicMaterial({ 
+                    color: 0xffa300,
+                    transparent: true,
+                    opacity: 0.4
+                });
+                const particle = new THREE.Mesh(geometry, material);
+                particle.position.set(
+                    (Math.random() - 0.5) * 20,
+                    (Math.random() - 0.5) * 20,
+                    (Math.random() - 0.5) * 20
+                );
+                scene.add(particle);
+                particles.push(particle);
+            }
+            
+            camera.position.z = 5;
+            
+            function animate() {
+                requestAnimationFrame(animate);
+                particles.forEach((p, i) => {
+                    p.rotation.x += 0.01;
+                    p.rotation.y += 0.01;
+                    p.position.y += Math.sin(Date.now() * 0.001 + i) * 0.002;
+                });
+                renderer.render(scene, camera);
+            }
+            animate();
+            
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+        
+        // Video Upload
+        const uploadZone = document.getElementById('uploadZone');
+        const videoInput = document.getElementById('videoInput');
+        const videoPlayer = document.getElementById('videoPlayer');
+        const videoPreview = document.getElementById('videoPreview');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
+        
+        uploadZone.addEventListener('click', () => videoInput.click());
+        
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+        
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragover');
+        });
+        
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].type.startsWith('video/')) {
+                handleVideoUpload(files[0]);
+            }
+        });
+        
+        videoInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleVideoUpload(e.target.files[0]);
+            }
+        });
+        
+        function handleVideoUpload(file) {
+            progressBar.style.display = 'block';
+            uploadZone.style.pointerEvents = 'none';
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 5;
+                progressFill.style.width = progress + '%';
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        const url = URL.createObjectURL(file);
+                        videoPlayer.src = url;
+                        videoPreview.style.display = 'flex';
+                        progressBar.style.display = 'none';
+                        uploadZone.style.pointerEvents = 'auto';
+                        progressFill.style.width = '0%';
+                    }, 300);
+                }
+            }, 30);
+        }
+        
+        function playVideo() { videoPlayer.play(); }
+        function pauseVideo() { videoPlayer.pause(); }
+        function resetVideo() { videoPlayer.currentTime = 0; }
+        function clearVideo() {
+            videoPlayer.src = '';
+            videoPreview.style.display = 'none';
+            videoInput.value = '';
+        }
+        
+        document.addEventListener('DOMContentLoaded', initThreeJS);
+    </script>
+</body>
+</html>
+
